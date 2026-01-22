@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Advanced text-to-speech web application with PDF support. Upload PDFs or enter text to convert to natural speech with customizable voice, speed, and pitch controls.">
+    <meta name="keywords" content="text to speech, TTS, PDF reader, speech synthesis, audio reader">
+    <title>VoiceFlow - Text to Speech & PDF Reader</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background Elements -->
+    <div class="bg-gradient"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+                <h1>VoiceFlow</h1>
+            </div>
+            <p class="subtitle">Transform text and PDFs into natural speech</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="main-grid">
+            <!-- PDF Upload Section -->
+            <section class="glass-card upload-section">
+                <h2 class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Upload PDF
+                </h2>
+
+                <div class="upload-area" id="uploadArea">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="upload-text">Drag & Drop PDF here</p>
+                    <p class="upload-subtext">or click to browse</p>
+                    <input type="file" id="pdfInput" accept=".pdf" hidden>
+                </div>
+
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                        <polyline points="13 2 13 9 20 9"></polyline>
+                    </svg>
+                    <span id="fileName">document.pdf</span>
+                    <button class="btn-icon" id="clearFile" title="Remove file">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Text Editor Section -->
+            <section class="glass-card editor-section">
+                <h2 class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Text Editor
+                </h2>
+
+                <textarea id="textArea" class="text-editor"
+                    placeholder="Enter text here or upload a PDF to extract text automatically..." rows="10"></textarea>
+
+                <div class="editor-footer">
+                    <span class="char-count" id="charCount">0 characters</span>
+                    <button class="btn-secondary" id="clearText">Clear Text</button>
+                </div>
+            </section>
+
+            <!-- Voice Controls Section -->
+            <section class="glass-card controls-section">
+                <h2 class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                    Voice Settings
+                </h2>
+
+                <div class="control-group">
+                    <label for="voiceSelect">Voice</label>
+                    <select id="voiceSelect" class="select-control">
+                        <option>Loading voices...</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="rateControl">
+                        Speed
+                        <span class="control-value" id="rateValue">1.0x</span>
+                    </label>
+                    <input type="range" id="rateControl" class="slider" min="0.5" max="2" step="0.1" value="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="pitchControl">
+                        Pitch
+                        <span class="control-value" id="pitchValue">1.0</span>
+                    </label>
+                    <input type="range" id="pitchControl" class="slider" min="0.5" max="2" step="0.1" value="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="volumeControl">
+                        Volume
+                        <span class="control-value" id="volumeValue">100%</span>
+                    </label>
+                    <input type="range" id="volumeControl" class="slider" min="0" max="1" step="0.1" value="1">
+                </div>
+            </section>
+
+            <!-- Playback Controls Section -->
+            <section class="glass-card playback-section">
+                <h2 class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                    </svg>
+                    Playback
+                </h2>
+
+                <div class="playback-buttons">
+                    <button class="btn-primary" id="playBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Play
+                    </button>
+
+                    <button class="btn-secondary" id="pauseBtn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                        Pause
+                    </button>
+
+                    <button class="btn-secondary" id="stopBtn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="6" y="6" width="12" height="12"></rect>
+                        </svg>
+                        Stop
+                    </button>
+                </div>
+
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="currentWord">Ready to play</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+
+                <div class="status-message" id="statusMessage">
+                    <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Enter or upload text to begin</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with Web Speech API & PDF.js | Text-to-Speech Technology</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <script src="app.js"></script>
+</body>
+
+</html>
